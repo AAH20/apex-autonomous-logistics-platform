@@ -17,33 +17,138 @@ Global logistics operations span multi-echelon networks, oceanic maritime lanes,
 
 ---
 
-## 2. High-Level System Architecture
+## 2. Professional System Architecture
+
+### 2.1 Macro Optimization Engine Architecture
+Designed following editorial diagram-design principles (disciplined visual hierarchy, semantic node shapes, and high-contrast styling):
 
 ```mermaid
 flowchart TD
-    subgraph GLOBAL["I. Global & Maritime Tier"]
-        MARITIME["Engine 4: Maritime Zermelo Router<br>Vector Current Fields + Wave Avoidance"]
-        RESILIENCE["Engine 8: Network Choke-Point Resilience<br>Multi-Commodity Min-Cost Flow Rerouting"]
+    %% Styling tokens inspired by Cathryn Lavery Diagram Design
+    classDef default fill:#1e293b,stroke:#475569,stroke-width:1.5px,color:#f8fafc;
+    classDef focal fill:#1e293b,stroke:#eb6c36,stroke-width:2.5px,color:#ffffff,font-weight:bold;
+    classDef telemetry fill:#0f172a,stroke:#38bdf8,stroke-width:1.5px,color:#e0f2fe;
+    classDef store fill:#090d16,stroke:#818cf8,stroke-width:1.5px,color:#e0e7ff;
+    classDef fleet fill:#111827,stroke:#10b981,stroke-width:1.5px,color:#ecfdf5;
+
+    %% Ingestion Telemetry Layer
+    subgraph INGESTION["1. SENSING & TELEMETRY INGRESS"]
+        AIS_STREAM{{"AIS Ocean & Current Telemetry<br/><small>NOAA HYCOM / Wave Feeds</small>"}}:::telemetry
+        EDI_STREAM{{"Terminal EDI & Berth Manifests<br/><small>ISO 6346 Intermodal Manifests</small>"}}:::telemetry
+        ERP_STREAM{{"ERP Multi-Echelon Demand<br/><small>Real-Time POS Consumption</small>"}}:::telemetry
+        IOT_STREAM{{"Cold-Chain IoT Sensors<br/><small>BLE / Cellular Reefer Telemetry</small>"}}:::telemetry
     end
 
-    subgraph INTERMODAL["II. Terminal & Intermodal Tier"]
-        CONTAINER["Engine 2: 3D Container Bin Packer<br>Extreme Points + CoG & Axle Weight Limits"]
-        CROSSDOCK["Engine 5: Cross-Docking Scheduler<br>Bilateral Quadratic Matching + AGV Flow"]
+    %% Global Maritime & Network Resilience Tier
+    subgraph TIER_GLOBAL["2. GLOBAL MARITIME & CHOKE-POINT RESILIENCE TIER"]
+        M4["<b>Engine 4: Maritime Zermelo Router</b><br/><small>Current Field Navigation · Admiralty P ∝ V³ · Wave Avoidance</small>"]:::default
+        M8["<b>Engine 8: Network Resilience Engine</b><br/><small>Min-Cost SSAP Flow · Choke-Point Auditing · NRI Index</small>"]:::default
+        GLOBAL_GRAPH[("Global Shipping Graph<br/><small>Directed Multi-Commodity Network</small>")]:::store
     end
 
-    subgraph NETWORK["III. Network & Inventory Tier"]
-        BULLWHIP["Engine 3: Bullwhip Suppressor<br>1D Kalman Sensor + GSM Safety Stock"]
-        VRPTW["Engine 1: Multi-Depot VRPTW<br>Clarke-Wright Savings + 2-Opt Polishing"]
+    %% Terminal Cross-Docking & Container Packing Tier
+    subgraph TIER_TERMINAL["3. TERMINAL INTERMODAL & CROSS-DOCK TIER"]
+        M2["<b>Engine 2: 3D Intermodal Container Packer</b><br/><small>Maximal Empty Spaces · 3D CoG Envelope · Axle Weight Limits</small>"]:::default
+        M5["<b>Engine 5: Cross-Docking Terminal Scheduler</b><br/><small>Bilateral Quadratic Matching · AGV Flow Shop Makespan</small>"]:::default
+        TERMINAL_BAY[("Container Stacking & Yard Buffer<br/><small>Extreme-Point Geometry Cache</small>")]:::store
     end
 
-    subgraph LASTMILE["IV. Last-Mile & Cold-Chain Tier"]
-        DRONE["Engine 7: Drone-Van FSTSP Dispatcher<br>Air-Ground Launch/Rendezvous Sync"]
-        COLDCHAIN["Engine 6: Cold-Chain Arrhenius Governor<br>USP &lt;1079&gt; MKT + Excursion Triage"]
+    %% Multi-Echelon Inventory & Fleet Routing Tier
+    subgraph TIER_NETWORK["4. MULTI-ECHELON INVENTORY & FLEET ROUTING TIER"]
+        M3["<b>Engine 3: Bullwhip Suppressor</b><br/><small>Recursive 1D Kalman Demand Sensing · GSM Safety Stock</small>"]:::default
+        M1["<b>Engine 1: Multi-Depot VRPTW</b><br/><small>Clarke-Wright Savings · 2-Opt Edge Polish · Time Windows</small>"]:::focal
+        INVENTORY_STATE[("Echelon Stock State<br/><small>Upstream Variance Buffer</small>")]:::store
     end
 
-    GLOBAL --> INTERMODAL
-    INTERMODAL --> NETWORK
-    NETWORK --> LASTMILE
+    %% Last-Mile Multi-Modal & Cold-Chain Governance Tier
+    subgraph TIER_LASTMILE["5. LAST-MILE MULTI-MODAL & COLD-CHAIN GOVERNANCE"]
+        M7["<b>Engine 7: Drone-Van FSTSP Dispatcher</b><br/><small>Synchronized Air-Ground Sorties · Battery SoC Bounds</small>"]:::focal
+        M6["<b>Engine 6: Cold-Chain Arrhenius Governor</b><br/><small>Arrhenius Chemical Kinetics · USP &lt;1079&gt; Mean Kinetic Temp</small>"]:::default
+    end
+
+    %% Fleet Actuation Layer
+    subgraph FLEET["6. AUTONOMOUS FLEET ACTUATION & CONTROL"]
+        VESSEL_ACT(["Autonomous Vessel Navigation<br/><small>Heading & Engine RPM Waypoints</small>"]):::fleet
+        AGV_ACT(["Terminal AGV Fleet<br/><small>Cross-Dock Pallet Move Tasks</small>"]):::fleet
+        VAN_ACT(["Ground Delivery Vans<br/><small>Deterministic Turn-by-Turn Route</small>"]):::fleet
+        DRONE_ACT(["Delivery UAV Fleet<br/><small>Aerial Drop Sortie & Rendezvous</small>"]):::fleet
+    end
+
+    %% Flow Connections & Pipeline Data Flow
+    AIS_STREAM -->|Vector currents & waves| M4
+    EDI_STREAM -->|Inbound container manifests| M5
+    ERP_STREAM -->|Noisy demand telemetry| M3
+    IOT_STREAM -->|Reefer temperature logs| M6
+
+    M4 -->|Optimal voyage path| GLOBAL_GRAPH
+    GLOBAL_GRAPH -->|Disruption detection & bypass| M8
+    M8 -.->|Rerouted transit berths| M5
+
+    M5 -->|Dock door assignments| AGV_ACT
+    M5 -->|Inbound pallet stream| M2
+    M2 -->|CoG/axle verified stowage| TERMINAL_BAY
+    TERMINAL_BAY -->|Loaded intermodal units| M1
+
+    M3 -->|Kalman filtered demand & safety stock| INVENTORY_STATE
+    INVENTORY_STATE -->|Depot replenishment orders| M1
+
+    M1 -->|Linehaul van route plan| M7
+    M7 -->|Ground delivery legs| VAN_ACT
+    M7 -->|Synchronized aerial drops| DRONE_ACT
+    M4 -->|Fuel-optimal heading| VESSEL_ACT
+
+    M6 -.->|Excursion triage alert| M1
+    M6 -.->|Shelf-life remaining feedback| M7
+```
+
+### 2.2 End-to-End Autonomous Dispatch Lifecycle
+
+Trace of an inbound intermodal shipment from oceanic voyage optimization through cross-dock pallet transfer, container loading, vehicle routing, and air-ground drone rendezvous:
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor PortOps as Port & Berth Ingress
+    participant M4 as Maritime Router (Eng 4)
+    participant M5 as Cross-Dock Scheduler (Eng 5)
+    participant M2 as 3D Container Packer (Eng 2)
+    participant M3 as Bullwhip Suppressor (Eng 3)
+    participant M1 as Multi-Depot VRPTW (Eng 1)
+    participant M7 as Drone-Van FSTSP (Eng 7)
+    participant M6 as Cold-Chain Governor (Eng 6)
+    actor Fleet as Autonomous Van & Drone
+
+    Note over PortOps,M4: 1. Oceanic Voyage & Berthing Phase
+    PortOps->>M4: Ingest ocean vector current & wave field
+    M4-->>PortOps: Fuel-optimal ETA (Zermelo Navigation + Admiralty cubic)
+    PortOps->>M5: Container vessel arrives at inbound dock doors
+
+    Note over M5,M2: 2. Cross-Docking & 3D Container Stowage Phase
+    M5->>M5: CDTAP bilateral quadratic door assignment
+    M5->>M2: Transfer pallet manifests to linehaul containers
+    M2->>M2: Maximal Empty Spaces (MES) 3D box placement
+    M2->>M2: Verify 3D CoG safety envelope & highway bridge axle loads
+    M2-->>M5: Validated container load & manifest release
+
+    Note over M3,M1: 3. Demand Filtering & Multi-Depot Route Synthesis
+    M3->>M3: 1D Kalman filter dampens retail variance amplification
+    M3->>M3: Compute Guaranteed Service Model (GSM) safety stock
+    M3->>M1: Pass debullwhipped order demands & customer time windows
+    M1->>M1: Clarke-Wright heuristic + 2-opt edge swap optimization
+    M1-->>M7: Output baseline ground van route legs
+
+    Note over M7,M6: 4. Air-Ground Multi-Modal Dispatch & Quality Triage
+    M7->>M7: Synchronize drone launch (i) and rendezvous (k)
+    M7->>M7: Verify drone battery state-of-charge (SoC) endurance
+    M6->>M6: Evaluate Arrhenius kinetic degradation & USP <1079> MKT
+    alt Thermal Excursion Detected (Status: CRITICAL)
+        M6-->>M7: Expedited priority drop required (shelf-life degraded)
+        M7->>M7: Re-optimize drone sortie to bypass ground congestion
+    else Nominal Thermal State
+        M6-->>M7: Standard dispatch clearance
+    end
+    M7->>Fleet: Dispatch ground van waypoints + aerial UAV sortie
+    Fleet-->>PortOps: Delivery verified at customer rendezvous point
 ```
 
 ---
@@ -86,7 +191,7 @@ $$T_{\text{MKT}} = \frac{-\Delta H / R}{\ln\left(\frac{1}{N} \sum_{i=1}^N \exp\l
 
 ### 7. Collaborative Drone-Van Multi-Modal Dispatch (FSTSP)
 Coordinates ground delivery van with autonomous aerial drone for the Flying Sidekick Traveling Salesperson Problem (FSTSP):
-$$t_{\text{rendezvous}}(k) = \max\left(t_{\text{van\_arrival}}(k), t_{\text{drone\_launch}}(i) + t_{\text{flight}}(i \to j \to k)\right)$$
+$$t_{\text{rendezvous}}(k) = \max\left(t_{\text{van arrival}}(k),\, t_{\text{drone launch}}(i) + t_{\text{flight}}(i \to j \to k)\right)$$
 Subject to drone battery state-of-charge (SoC) endurance $t_{\text{flight}} \le E_{\text{battery}}$.
 
 ### 8. Choke-Point Network Flow Resilience
@@ -129,7 +234,48 @@ Measured on Apple Silicon (pure Python standard library, zero dependencies):
 
 ---
 
-## 5. Quickstart & Usage
+## 5. Cross-Ecosystem Integration Topology
+
+The platform integrates directly into the broader sovereign Apex ecosystem, supplying deterministic optimization primitives to autonomous agents and physical infrastructure:
+
+```mermaid
+flowchart LR
+    classDef default fill:#1e293b,stroke:#475569,stroke-width:1.5px,color:#f8fafc;
+    classDef core fill:#0f172a,stroke:#eb6c36,stroke-width:2.5px,color:#ffffff,font-weight:bold;
+    classDef partner fill:#1e293b,stroke:#0284c7,stroke-width:1.5px,color:#f0f9ff;
+    classDef infra fill:#181825,stroke:#8b5cf6,stroke-width:1.5px,color:#faf5ff;
+
+    subgraph CORE_PLATFORM["SOVEREIGN LOGISTICS KERNEL"]
+        APEX_LOGISTICS["<b>apex-autonomous-logistics-platform</b><br/><small>8 Deterministic NP-Hard Optimization Engines</small>"]:::core
+    end
+
+    subgraph ROBOTICS_TIER["ROBOTICS & AUTOPILOT"]
+        AUTOPILOT["<b>apex-autopilot-optimization</b><br/><small>PX4 / ArduPilot Flight & Ground Control</small>"]:::partner
+    end
+
+    subgraph FINTECH_TIER["TRADE FINANCE & ESCROW"]
+        FINTECH["<b>apex-fintech-platform</b><br/><small>ISO 20022 · Letters of Credit · Bill of Lading</small>"]:::partner
+    end
+
+    subgraph ENERGY_TIER["PORT MICROGRID & COLD POWER"]
+        GRID["<b>Apex_Resilience_Grid</b><br/><small>Port Reefer Power & Charging VPP</small>"]:::partner
+    end
+
+    subgraph AGENTIC_INFRA["AGENTIC & MCP FOUNDRY MESH"]
+        FOUNDRY["<b>apex-mcp-foundry</b><br/><small>Dynamic MCP Tool Synthesis on Demand</small>"]:::infra
+        MESH["<b>apex-kernel-mesh</b><br/><small>DAG Multi-Kernel Pipeline Composition</small>"]:::infra
+    end
+
+    APEX_LOGISTICS -->|Air-Ground Trajectory Waypoints| AUTOPILOT
+    APEX_LOGISTICS -->|Electronic Bill of Lading & Milestones| FINTECH
+    APEX_LOGISTICS -->|Reefer Chiller kW Demand & Peak Shaving| GRID
+    FOUNDRY -->|Exposes 8 Solvers as Microsecond MCP Tools| APEX_LOGISTICS
+    MESH -->|Composes Cross-Kernel Optimization Graph| APEX_LOGISTICS
+```
+
+---
+
+## 6. Quickstart & Usage
 
 ```bash
 # Clone repository
@@ -148,7 +294,7 @@ python3 -m apex_autonomous_logistics_platform.cli demo
 
 ---
 
-## 6. Python API Usage
+## 7. Python API Usage
 
 ```python
 from apex_autonomous_logistics_platform import (
@@ -183,6 +329,6 @@ print(f"Cold-Chain Status: {status.excursion_severity} | MKT: {status.mean_kinet
 
 ---
 
-## 7. License
+## 8. License
 
 Licensed under the Apache License, Version 2.0 (Apache-2.0).
