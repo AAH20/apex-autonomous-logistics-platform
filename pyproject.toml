@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.backends._legacy:_Backend"
+
+[project]
+name = "apex-autonomous-logistics-platform"
+version = "0.1.0"
+description = "Autonomous Global Supply Chain, Maritime Freight & Multi-Modal Logistics Operating System: MD-VRPTW, 3D Container Packing with CoG/Axle Limits, Multi-Echelon Bullwhip Suppressor, Zermelo Maritime Routing, Cold-Chain Arrhenius Governor, Drone-Van FSTSP, and Network Flow Choke-Point Resilience"
+readme = "README.md"
+license = "Apache-2.0"
+requires-python = ">=3.10"
+authors = [{ name = "AAH20" }]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Office/Business :: Financial :: Point-Of-Sale",
+]
+
+[project.scripts]
+apex-logistics = "apex_autonomous_logistics_platform.cli:main"
